@@ -70,10 +70,65 @@ const planets = [
 // =============================================================
 
 // 1: Create a 'Planet' component that renders a planet card
+function Planet(props) {
+  const handleDelete = () => {
+    props.onDelete();
+  };
 
+ return (
+    <div className="card">
+      <div>
+        <img src={ props.url } alt={ props.name } />
+      </div>
+      <h2>{ props.name }</h2>
+      <p>{ props.desc }</p>
+      <h3>Planet Profile</h3>
+      <ul>
+        <li><strong>Diameter:</strong> { props.diameter }</li>
+        <li><strong>Moons:</strong> { props.moons }</li>
+      </ul>
+      <div>
+        <button onClick={() => props.removePlanet(props.id)}>Delete</button>
+      </div>
+    </div>
+ )
+}
 
 // 2: Create a container component that iterates over the planets array 
 //    and renders a 'Planet' component for each object in the array 
+class Container extends React.Component {
+  constructor( props ) {
+    super( props );
+    this.state = {
+      planets: props.initialPlanets.slice()
+    }
+  }
 
+
+  handleRemovePlanet = (id) => {
+    this.setState( prevState => {
+      return {
+        planets: prevState.planets.filter( p => p.id !== id )
+      };
+    });
+  }
+
+  render() {
+    return (
+      <div className="container">
+        {this.state.planets.map((planet, index) => (
+          <Planet 
+            key={planet.id.toString()} 
+            {...planet} 
+            removePlanet={this.handleRemovePlanet} />
+        ))}
+      </div>
+    )
+  }
+};
 
 // 3: Render the container component to the DOM
+ReactDOM.render(
+  <Container initialPlanets={planets}/>,
+  document.getElementById('root')
+);
